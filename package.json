@@ -1,0 +1,22 @@
+{
+  "name": "amtrak-lol",
+  "version": "0.1.0",
+  "description": "amtrak.lol heroku side",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amtrak": "^2.8.9",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "pg": "^8.8.0",
+    "sha256": "^0.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
