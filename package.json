@@ -4,6 +4,7 @@
   "description": "amtrak.lol heroku side",
   "main": "src/index.js",
   "scripts": {
+    "build": "build.sh",
     "start": "node src/index.js",
     "test": "jest"
   },

@@ -13,10 +13,6 @@ const client = createClient();
 const app = express();
 app.use(express.json());
 
-app.post("/echo", (req, res) => {
-  res.json(req.body);
-});
-
 app.post("/api/load_data", (req, result) => {
   let data = req.body;
   let update_id = undefined;
