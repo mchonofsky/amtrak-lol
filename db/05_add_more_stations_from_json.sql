@@ -1,3 +1,4 @@
+BEGIN;
 INSERT INTO stations VALUES ('Alma', 'AAM', 43.391728275821066, -84.64483700521345, 'MI' ) ON CONFLICT (station_id) DO UPDATE SET state_code='MI', name='Alma';
 INSERT INTO stations VALUES ('Albany', 'ABA', 42.74449965117737, -73.80918551503535, 'NY' ) ON CONFLICT (station_id) DO UPDATE SET state_code='NY', name='Albany';
 INSERT INTO stations VALUES ('Abbotsford-Colby', 'ABB', 44.928561185077925, -90.31467388824505, 'WI' ) ON CONFLICT (station_id) DO UPDATE SET state_code='WI', name='Abbotsford-Colby';
@@ -1086,3 +1087,6 @@ INSERT INTO stations VALUES ('Yosemite National Park', 'YOT', 37.87224517438319,
 INSERT INTO stations VALUES ('Yosemite National Park', 'YOV', 37.74804714782462, -119.58633076863111, 'CA' ) ON CONFLICT (station_id) DO UPDATE SET state_code='CA', name='Yosemite National Park';
 INSERT INTO stations VALUES ('Yosemite National Park', 'YOW', 37.86964115360545, -119.64930579259182, 'CA' ) ON CONFLICT (station_id) DO UPDATE SET state_code='CA', name='Yosemite National Park';
 INSERT INTO stations VALUES ('Yuma', 'YUM', 32.72314389046925, -114.61558244812736, 'AZ' ) ON CONFLICT (station_id) DO UPDATE SET state_code='AZ', name='Yuma';
+
+COMMIT;
+
