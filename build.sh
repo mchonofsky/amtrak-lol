@@ -1,4 +1,5 @@
 echo "running setup script"
+echo $DATABASE_URL
 psql $DATABASE_URL -f db/00_create_tables.sql
 psql $DATABASE_URL -f db/01_create_index_train_reports.sql
 psql $DATABASE_URL -f db/02_enter_stations.sql
