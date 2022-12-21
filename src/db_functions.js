@@ -12,8 +12,8 @@ exports.rollback = function rollback(client) {
 
 exports.createClient = function createClient() {
   const connectionString =
-    process.env.DATABASE_URL ||
-    "postgres://mchonofsky:mchonofsky@localhost:5432/amtrak-lol";
+    process.env.DATABASE_URL;// ||
+    //"postgres://mchonofsky:mchonofsky@localhost:5432/amtrak-lol";
   const client = new pg.Client({
     connectionString: connectionString,
   });
