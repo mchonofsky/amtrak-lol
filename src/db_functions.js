@@ -11,8 +11,8 @@ exports.rollback = function rollback(client) {
 };
 
 exports.createClient = function createClient() {
-  const connectionString =
-    process.env.DATABASE_URL;// ||
+  const connectionString = "postgres://zkncpyacfkfkre:4fc35f84ce2b02299647699307e30a8558e9a416be1f285be5f80f0c2bc7aeb2@ec2-3-214-2-141.compute-1.amazonaws.com:5432/d8pl7dql0f48pl"
+    // process.env.DATABASE_URL; ||
     //"postgres://mchonofsky:mchonofsky@localhost:5432/amtrak-lol";
   const client = new pg.Client({
     connectionString: connectionString,
