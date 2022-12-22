@@ -105,6 +105,8 @@ const fetchTrainData = async (i = 0) => {
         });
         res.on("end", function () {
           console.log("resolving apiCall, data length", data.length);
+          if (data.length < 1000)
+            console.log(data);
           resolve(data);
         });
       })
