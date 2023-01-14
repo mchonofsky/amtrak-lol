@@ -63,6 +63,8 @@ exports.insertBigqueryStationsTrains = async function insertBigqueryStationsTrai
   const queryResult = await client.query(
     `SELECT * FROM stations_trains WHERE update_id != ${max_update_id}`) // stops updating when train disappears
   const rows = queryResult.rows;  
+  if (rows.length == 0) return;
+  
   // Insert data into a table
   await bigquery
     .dataset(process.env.BQ_DATASET)
@@ -75,6 +77,8 @@ exports.insertBigqueryTrainReports = async function insertBigqueryTrainReports(m
   const queryResult = await client.query(
     `SELECT * FROM train_reports;`)
   const rows = queryResult.rows;  
+  if (rows.length == 0) return;
+  
   // Insert data into a table
   await bigquery
     .dataset(process.env.BQ_DATASET)
