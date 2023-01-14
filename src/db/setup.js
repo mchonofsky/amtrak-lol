@@ -1,6 +1,7 @@
 const process = require("process");
 const pg = require("pg");
 
+exports.DEBUG_MODE = process.env.ENVIRONMENT == "local" ? true : false;
 exports.rollback = function rollback(client) {
   // rollback the transaction in case of an error
   client.query("ROLLBACK", (err) => {
