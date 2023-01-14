@@ -143,10 +143,6 @@ exports.saveTrain = function saveTrain(train, update_id, client) {
     });
 };
 
-exports.updateBigqueryStations = function updateBigqueryStations(client) {
-
-}
-
 exports.archive = async function archive(client) {
   // ARCHIVE streams ALL train_reports to BigQuery
   // It also streams SELECTED stations_trains to BigQuery where old version had null and new version doesn't
