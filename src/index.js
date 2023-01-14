@@ -2,13 +2,13 @@ const express = require("express");
 const crypto = require("crypto");
 const path = require("path");
 const pg = require("pg");
-const amtrak = require("./amtrak");
-const amtraker = require("./amtraker_api.js");
+const amtraker = require("./api/amtraker_api.js");
 
 const PORT = process.env.PORT || 3000;
 const DATA_SALT = process.env.DATA_SALT || "";
 
-const { insertStation, saveTrain, saveStation, createClient } = require("./db_functions.js");
+const { createClient } = require("./db/setup.js")
+const { archive, upsertStation, saveTrain, saveStation, purge} = require("./db/update.js");
 
 const client = createClient();
 
@@ -16,11 +16,19 @@ const client = createClient();
 const app = express();
 app.use(express.json());
 
+app.post("/api/purge", (req, result) => {
+  let data = req.body;
+  if (DATA_SALT == data.api_key) {
+    purge(client);
+  }
+});
+
 app.post("/api/load_data", (req, result) => {
   let data = req.body;
   let update_id = undefined;
   let all_stations = [];
   let total_length = 0;
+  // TODO rewrite with async/await
   if (DATA_SALT == data.api_key) {
     console.log("challenge succeeded");
     client.query("INSERT INTO db_state VALUES (DEFAULT, DEFAULT) RETURNING update_id;")
@@ -75,7 +83,7 @@ app.post("/api/load_data", (req, result) => {
                 if ( all_stations.includes ( station.code ) ) {
                   return saveStation(station, train_id.rows[0].train_id, update_id, client);
                 } else { 
-                  return insertStation(station.code).then(() =>
+                  return upsertStation(station.code, client).then(() =>
                     {
                       saveStation(station, train_id.rows[0].train_id, update_id, client);
                     }
@@ -98,6 +106,14 @@ app.post("/api/load_data", (req, result) => {
     })
     .then((res) => {
       console.log("Transaction committed.");
+    })
+    .then((res) => {
+      archive(client);
+    })
+    .then((res) => {
+      purge(client);
+    })
+    .then((res) => {
       result.status(200);
       result.send({result: "ok"});
       return;

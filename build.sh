@@ -19,13 +19,13 @@ version_array=$( psql $DATABASE_URL -c 'copy (select migration_file from version
 for item in $(ls db/*.sql | sort) ; do
     execute_file='true'
     for migration in $version_array ; do
-        if [ $migration = item ]; then
+        if [ $migration = $item ]; then
             execute_file='false'
         fi
     done
     if [ $execute_file = 'true' ]; then
-        psql $DATABASE_URL -f $item;
-        psql -a amtrak-lol -c "insert into versions ( migration_file) values ('${item}') ;"
+        echo "Migrating database: executing $item"
+        psql $DATABASE_URL -f $item && psql -a amtrak-lol -c "insert into versions ( migration_file) values ('${item}') ;"
     fi
 done
 

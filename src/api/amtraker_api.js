@@ -46,7 +46,7 @@ exports.fetchOneTrain = function fetchOneTrain(train) {
   return axios.get(`${API_LOCATION}/trains/${train}`)
     .then(function (response) {
       // handle success
-      console.log(`Got API response for station ${station}`);
+      console.log(`Got API response for train ${train}`);
       return response.data;
     })
     .catch(function (error) {
