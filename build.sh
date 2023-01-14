@@ -6,7 +6,7 @@ else
     echo 'HEROKU AQUA DEFINED'
     export DATABASE_URL=$HEROKU_POSTGRESQL_AQUA_URL
 fi
-echo "database url is" $DATABASE_URL
+echo "database url is redacted" 
 echo 'Executing Database build'
 
 ############# DATABASE VERSIONING CONTROLLED BY TABLE versions
@@ -28,7 +28,8 @@ for item in $(ls db/*.sql | sort) ; do
     done
     if [ $execute_file = 'true' ]; then
         echo "Migrating database: executing $item"
-        echo "psql $DATABASE_URL -f $item && psql -a amtrak-lol -c \"insert into versions ( migration_file) values ('${item}') ;\""
+        echo "psql DATABASE_URL -f $item && psql DATABASE_URL -a amtrak-lol -c \"insert into versions ( migration_file) values ('${item}') ;\""
+        psql $DATABASE_URL -f $item && psql $DATABASE_URL -a amtrak-lol -c "insert into versions ( migration_file) values ('${item}') ;"
     fi
 done
 
