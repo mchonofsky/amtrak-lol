@@ -23,3 +23,7 @@ exports.createClient = function createClient() {
   client.connect();
   return client;
 };
+
+exports.sanitizeTime = function sanitizeTime(timeString) {
+  return Date.parse(timeString).toString('u');
+}

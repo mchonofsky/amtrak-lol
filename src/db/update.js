@@ -1,7 +1,7 @@
 const process = require("process");
 const pg = require("pg");
 const amtraker = require("../api/amtraker_api.js");
-const {rollback, createClient } = require('./setup.js');
+const {rollback, createClient, sanitizeTime } = require('./setup.js');
 const { insertBigqueryTrainReports, insertBigqueryStationsTrains } = require('../api/bigquery.js')
 
 client = createClient();
@@ -119,9 +119,9 @@ exports.saveTrain = function saveTrain(train, update_id, client) {
         train.heading, // 7
         train.trainState, // 8 
         train.serviceDisruption, // 9
-        train.updatedAt, // 10
+        sanitizeTime(train.updatedAt), // 10
         update_id, // 11
-        train.lastValTS // 12
+        sanitizeTime(train.lastValTS) // 12
       ]
     )
     .catch((err) => {
