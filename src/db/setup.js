@@ -27,6 +27,7 @@ exports.createClient = function createClient() {
 exports.sanitizeTime = function sanitizeTime(timeString) {
   try {
     return Date.parse(timeString).toString('u');
+  }
   catch ( e ) {
     console.log('ERROR: timeString is', timeString);
     throw e;
