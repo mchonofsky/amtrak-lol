@@ -1,7 +1,7 @@
 const process = require("process");
 const pg = require("pg");
 const amtraker = require("../api/amtraker_api.js");
-const {rollback, createClient, sanitizeTime } = require('./setup.js');
+const {bestTime, rollback, createClient, sanitizeTime } = require('./setup.js');
 const { insertBigqueryTrainReports, insertBigqueryStationsTrains } = require('../api/bigquery.js')
 
 client = createClient();
@@ -42,11 +42,11 @@ exports.saveStation = function saveStation(
   update_id,
   client
 ) {
-  if (! ((station.schArr == null) && (station.schDep == null) )) { 
+  if (! ((station.schArr == null) && (station.schDep == null) )) {
     return client
       .query(
         `
-    INSERT INTO stations_trains (station_id, train_id, scheduled_arrival, posted_arrival, scheduled_departure, posted_departure, update_id) 
+    INSERT INTO stations_trains (station_id, train_id, scheduled_arrival, posted_arrival, scheduled_departure, posted_departure, update_id)
     VALUES ( $1, $2, $3, $4, $5, $6, $7 )
     ON CONFLICT (station_id, train_id) DO UPDATE SET
     scheduled_arrival = $3,
@@ -87,27 +87,52 @@ exports.saveStation = function saveStation(
   }
 };
 
+function amtrakBestTime( station ) {
+  return bestTime({scheduled_arrival: station.schArr, scheduled_departure: station.schDep})
+}
+
 exports.saveTrain = function saveTrain(train, update_id, client) {
-  console.log("inserting train", train.routeName, train.objectID);
+  console.log("saveTrain inserting train", train.routeName, train.objectID);
+  first_station = train.stations.reduce( (first_station, station) => (! first_station) || (amtrakBestTime(station) < amtrakBestTime(first_station)) ? station : first_station);
+  last_station = train.stations.reduce(   (last_station, station) => (! last_station)  || (amtrakBestTime(station) > amtrakBestTime(last_station)) ? station : last_station);
+  console.log([
+        train.routeName, //1
+        train.trainNum, //2
+        train.objectID, // was trainID,//3
+        train.lat, //4
+        train.lon, //5
+        train.velocity, // 6
+        train.heading, // 7
+        train.trainState, // 8
+        train.serviceDisruption, // 9
+        sanitizeTime(train.updatedAt), // 10
+        update_id, // 11
+        sanitizeTime(train.lastValTS), // 12
+        first_station.code,
+        last_station.code
+      ]
+  )
   return client
     .query(
       `
-    INSERT INTO train_reports (name, amtrak_train_number, amtrak_object_id, latitude, longitude, velocity, heading, train_state, service_disruption, updated_at, update_id, lastValTS)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    INSERT INTO train_reports (name, amtrak_train_number, amtrak_object_id, latitude, longitude, velocity, heading, train_state, service_disruption, updated_at, update_id, lastValTS, first_station, last_station)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
     ON CONFLICT (amtrak_object_id)
-    DO UPDATE SET 
+    DO UPDATE SET
     name=$1,
     amtrak_train_number=$2,
     amtrak_object_id=$3,
-    latitude=$4, 
-    longitude=$5, 
-    velocity=$6, 
-    heading=$7, 
-    train_state=$8, 
+    latitude=$4,
+    longitude=$5,
+    velocity=$6,
+    heading=$7,
+    train_state=$8,
     service_disruption=$9,
     updated_at=$10,
     update_id=$11,
-    lastValTS=$12
+    lastValTS=$12,
+    first_station=$13,
+    last_station=$14
     RETURNING train_id;`,
       [
         train.routeName, //1
@@ -117,11 +142,13 @@ exports.saveTrain = function saveTrain(train, update_id, client) {
         train.lon, //5
         train.velocity, // 6
         train.heading, // 7
-        train.trainState, // 8 
+        train.trainState, // 8
         train.serviceDisruption, // 9
         sanitizeTime(train.updatedAt), // 10
         update_id, // 11
-        sanitizeTime(train.lastValTS) // 12
+        sanitizeTime(train.lastValTS), // 12
+        first_station.code,
+        last_station.code
       ]
     )
     .catch((err) => {
@@ -133,11 +160,30 @@ exports.saveTrain = function saveTrain(train, update_id, client) {
         train.heading
       );
       console.log(train);
+      console.log('insert deets');
+      console.log(
+      [
+        train.routeName, //1
+        train.trainNum, //2
+        train.objectID, // was trainID,//3
+        train.lat, //4
+        train.lon, //5
+        train.velocity, // 6
+        train.heading, // 7
+        train.trainState, // 8
+        train.serviceDisruption, // 9
+        sanitizeTime(train.updatedAt), // 10
+        update_id, // 11
+        sanitizeTime(train.lastValTS), // 12
+        first_station.code,
+        last_station.code
+      ]
+      )
       if (
         !err.message ==
         "error: current transaction is aborted, commands ignored until end of transaction block"
       )
-      console.log("error is", err);
+      console.log("ERROR >>> ", err);
       rollback(client);
       throw err;
     });
@@ -155,11 +201,11 @@ exports.archive = async function archive(client) {
 exports.purge = function purge(client) {
   return client.query('SELECT MAX(update_id) FROM db_state;')
   .then( (res) => {
-      update_id = res.rows[0].max;  
+      update_id = res.rows[0].max;
   })
   .then( (res) => client.query('BEGIN;'))
-  .then ((res) => client.query('DELETE FROM stations_trains WHERE update_id != $1 or update_id is null;', [update_id]) ) 
-  .then ((res) => client.query('DELETE FROM train_reports WHERE update_id != $1 or update_id is null;', [update_id]) ) 
+  .then ((res) => client.query('DELETE FROM stations_trains WHERE update_id != $1 or update_id is null;', [update_id]) )
+  .then ((res) => client.query('DELETE FROM train_reports WHERE update_id != $1 or update_id is null;', [update_id]) )
   .then ((res) => {
     client.query('COMMIT;');
     console.log('Purge complete.');

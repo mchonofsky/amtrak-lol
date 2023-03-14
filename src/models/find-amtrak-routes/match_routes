@@ -1,0 +1,30 @@
+WITH all_values AS 
+(
+    select 
+        amtrak_train_number, name, dist, rank() over (partition by amtrak_train_number ORDER BY dist ASC) r 
+    from (
+        select max(dist) as dist, amtrak_train_number, name from (
+            select 
+                display_name, 
+                amtrak_routes.name as name, 
+                amtrak_train_number, 
+                st_distance(st_transform(st_setsrid(st_point(longitude, latitude),4236),3857), geom)/1609 dist 
+            from amtrak_routes 
+            join (
+                select distinct 
+                    stations.longitude, 
+                    stations.latitude, 
+                    stations.display_name, 
+                    amtrak_train_number 
+                from stations_trains 
+                join train_reports on train_reports.train_id = stations_trains.train_id 
+                join stations on stations_trains.station_id=stations.station_id
+            ) foo on true
+        ) foo group by amtrak_train_number, name
+    ) foo
+) 
+select 
+amtrak_train_number, 
+name, 
+dist 
+from all_values where r=1 order by name, amtrak_train_number ;

@@ -28,8 +28,17 @@ for item in $(ls db/*.sql | sort) ; do
     done
     if [ $execute_file = 'true' ]; then
         echo "Migrating database: executing $item"
-        echo "psql DATABASE_URL -f $item && psql DATABASE_URL -a amtrak-lol -c \"insert into versions ( migration_file) values ('${item}') ;\""
-        psql $DATABASE_URL -f $item && psql $DATABASE_URL -a amtrak-lol -c "insert into versions ( migration_file) values ('${item}') ;"
+        if [ ${item##*.} = 'sql' ]; then
+            echo "psql DATABASE_URL -f $item && psql DATABASE_URL -a amtrak-lol -c \"insert into versions ( migration_file) values ('${item}') ;\""
+            psql $DATABASE_URL -v "ON_ERROR_STOP=1" -f $item && psql $DATABASE_URL -a amtrak-lol -c "insert into versions ( migration_file) values ('${item}') ;"
+        else
+            echo "bash $item && psql DATABASE_URL -a amtrak-lol -c \"insert into versions ( migration_file) values ('${item}') ;\""
+            bash $item && psql DATABASE_URL -a amtrak-lol -c "insert into versions ( migration_file) values ('${item}') ;"
+        fi
     fi
 done
 
+
+echo 'building amtrak-lol interface'
+cd amtrak-lol
+npm run build

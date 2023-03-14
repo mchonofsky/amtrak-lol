@@ -1,0 +1,6 @@
+.env
+amtracker-f6f14685d522.json
+*.swp
+amtrak-lol/build
+node_modules
+amtrak-lol/node_modules

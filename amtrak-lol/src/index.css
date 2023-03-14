@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Coustard&family=Monoton&family=VT323&display=swap');
+
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+  display: inherit;
+  flex-direction: inherit;
+  align-items: inherit;
+}
+
+body {
+  max-width: 500px;
+}
+
+.splashbox {
+  font-family: "VT323", monospace;
+  font-size: 6vh;
+  line-height: 6vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  margin: 1em 0;
+}
+
+#wherethe {
+line-height: 7vh;
+}
+
+.earth {
+  font-family: "monoton", sans-serif;
+  font-size: 8vh;
+  line-height: 8vh;
+}
+
+.mainbox {
+  font-family: "Coustard", serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em;
+  border:2px solid black;
+  min-width: 90%;
+  margin: 1em;
+  text-underline-offset: 0.3em;
+  height: 55vh;
+}
+
+.top-header {
+    font-size: 4vh;
+    text-align: center;
+  display:unset;
+}
+
+.highlight {
+  display: inline;
+  text-decoration: underline;
+}
+
+.mainbox-box.first {
+    padding-bottom: 3em;
+}
+
+.morebutton {
+  margin: 0.5em;
+  color: darkslategray;
+
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;  
+}
+
+.stops {
+
+}
+
+.error-prompt {
+  display: none;
+}
+
+.supporting-text {
+    text-align: center;
+    font-size: large;
+}
+
+.station-details {
+  border: none;
+  height: calc(45vh - 3em);
+}

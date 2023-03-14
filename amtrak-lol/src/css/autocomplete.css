@@ -1,0 +1,25 @@
+.result-ac {
+  position: relative;
+}
+
+.result-ac ul {
+  margin-top: calc(-3vw );
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  background: white;
+  overflow-y: auto;
+  max-height: 30vh;
+}
+
+.result-ac ul li {
+  font-size: 6vw;
+  font-family: sans-serif;
+  padding: 5px 8px;
+}
+
+.result-ac ul li:hover {
+  background: #eee;
+}

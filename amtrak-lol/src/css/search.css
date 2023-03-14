@@ -1,0 +1,82 @@
+.search {
+  display: block;
+}
+
+input[type="text"] {
+  height: 8vh;
+  font-size: 4vh;
+  width: 100%;
+  border: 3px solid #282828;
+  background-color: #d8d8d8;
+  padding: 0.4em 0.7em 0.4em 0.7em;
+  margin: 0 0 1.5vh 0;
+  border-radius: 0px;
+}
+
+input[type="text"]:focus-visible {
+  border: 3px solid #282828;
+  border-radius: 0px;
+}
+
+.search-tags {
+ /* margin-bottom: 2vw;
+*/}
+
+.search-tag {
+  background: lightgray;
+  display: inline-block;
+  margin: 0 1.5vh 0 0;
+  padding: 2px 6px;
+}
+
+.search-item {
+  margin-right: 9px;
+}
+
+.searchbox {
+
+}
+
+.sugg-list {
+  border: 2px dotted #ccc;
+  border-top: none;
+  margin-top: -1.5vh;
+}
+
+.result {
+  font-size: 2vh;
+  padding: 0.5vh 0;
+  display: inline-block;
+  cursor: pointer;
+    background: #ddd;
+    margin: 5px 0;
+    padding: 3px 4px 1px 3px;
+    width: calc(100% - 12px);
+}
+
+
+.resultbox {
+  border-top: 2px solid #444;
+  margin-top: 12px;
+  padding-top: 15px;
+  display: inline-block;
+  height: calc(55vh - 2em - 6vh - 2vh - 1vh - 1em - 12px - 4px - 1vh);
+  overflow-y: scroll;
+  width: 96%;
+}
+
+
+.resultbox .no-search {
+  height: calc(55vh - 6vh - 2vh - 1vh - 1em - 12px - 1vh);
+}
+
+.train-time-box {
+  background-color: #fff9;
+  border-radius: 2px;
+  padding: 0 6px;
+  margin-bottom: 2px;
+  padding-top: 3px;
+  font-size: smaller;
+  margin-right: 0.4em;
+  max-width: fit-content;
+}
