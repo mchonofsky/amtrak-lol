@@ -33,6 +33,7 @@ update_registered_converter(
 model_onnx = convert_sklearn(
     pipe, 'pipeline_xgboost',
     [('input', FloatTensorType([None, X.shape[1]]))],
-    target_opset=12)
+    target_opset=12, options={'zipmap': False}
+    )
 with open("pipeline_xgboost.onnx", "wb") as f:
     f.write(model_onnx.SerializeToString())

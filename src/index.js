@@ -5,6 +5,8 @@ const crypto = require("crypto");
 const path = require("path");
 const pg = require("pg");
 const amtraker = require("./api/amtraker_api.js");
+// ml runtime
+const ort = require('onnxruntime-node');
 
 const PORT = process.env.PORT || 3000;
 const DATA_SALT = process.env.DATA_SALT || "";
@@ -17,11 +19,66 @@ const client = createClient();
 // Create a new express app
 const app = express();
 
+
 app.use(express.json());
 
 app.post("/api/get_train", async (req, result) => {
   let data = req.body;
-  console.log('geoloc data is.', data)
+  const onnx_session =  await ort.InferenceSession.create('./src/models/location-to-train-novelocity/pipeline_xgboost.onnx');
+  console.log(onnx_session);
+  console.log('geoloc data is.', data);
+  if ( (Object.keys(data.coords).length === 0 ) && (! DEBUG_MODE) )
+  {
+    result.status(200);
+    // todo: send more informative response
+    result.send([]);
+    return;
+  }
+  // get first pass for advanced match
+  if (! DEBUG_MODE ) {
+    var latitude = data.coords.latitude;
+    var longitude = data.coords.longitude;
+    var speed = data.coords.speed;
+  } else 
+  {
+    var latitude = 42.3670086745693;
+    var longitude = -71.0630005924861;
+    var speed = 0;
+  }
+  let candidate_trains = (await client.query(
+    {
+      text: `SELECT train_id, velocity, NORTH(HEADING(heading)) north, EAST(HEADING(heading)) east, latitude, longitude, extract(epoch from lastvalts) epoch_time FROM train_reports WHERE st_distancesphere(st_makepoint(longitude, latitude), st_makepoint(${longitude}, ${latitude})) < 10000;`,
+      rowMode: 'array'
+    }
+  )).rows;
+  
+  // inference the classification model
+  // 'feeds' in the documentation
+  const tensors = {};
+  const matches = [];
+  for (var train_index = 0; train_index < candidate_trains.length; train_index ++ ) {
+    let train_id = candidate_trains[train_index][0];
+    let last_val_ts = candidate_trains[train_index][candidate_trains[train_index].length - 1]
+    let classification_data = Float32Array.from(
+      candidate_trains[train_index].slice(1,-1).concat(
+        [
+          speed,
+          latitude,
+          longitude,
+          Date.now()/1000 - last_val_ts
+        ]
+      )
+    );
+    tensors['input'] = new ort.Tensor('float32', classification_data, [1, 9]);
+    console.log('inferencing')
+    // feed inputs and run
+    const results = await onnx_session.run(tensors);
+    // data
+    const output = results.label.data[0];
+    if (output == 1) matches.push(train_id);
+  }
+  
+  train_id_string = matches.length > 0 ? '(' + matches.toString() + ')' : '(-1)'; // id always > 0
   // get dummy data
   let trains = (await client.query(
         `SELECT st.train_id train_id, s1.station_id first_station_station_id, s1.city first_station_name, s1.state_code first_station_state_code, s2.station_id last_station_station_id, s2.city last_station_name, s2.state_code last_station_state_code, 
@@ -38,7 +95,7 @@ app.post("/api/get_train", async (req, result) => {
           JOIN stations s1 ON s1.station_id = tr.first_station
           JOIN stations s2 on s2.station_id = tr.last_station
           JOIN stations sx on st.station_id = sx.station_id
-        WHERE ABS(-122.2-tr.longitude) < 0.5
+        WHERE train_id in ${train_id_string}
         GROUP BY st.train_id, s1.city, s1.state_code, s2.city, s2.state_code, s1.station_id, s2.station_id;`)).rows;
   result.status(200);
   result.send(trains);
@@ -81,9 +138,9 @@ app.post("/api/train_details", async (req, result) => {
   first_station = resultToOutput(stations_trains.reduce((x, opt) => opt.station_id == first_station_station_code ? opt : x));
   last_station  = resultToOutput(stations_trains.reduce((x, opt) => opt.station_id == last_station_station_code  ? opt : x));
 
-  //TODO remove time
+  //TODO remove time in production
   let train_data = {
-    current_time: new Date((first_station.scheduled_arrival.getTime() + last_station.scheduled_arrival.getTime())/2), // DEBUGGG!!!!
+    current_time: new Date((first_station.scheduled_arrival.getTime() + last_station.scheduled_arrival.getTime())/2), // this line
     train_data: {
       amtrak_train_number: stations_trains[0].amtrak_train_number,
       velocity: stations_trains[0].velocity,
