@@ -2,10 +2,11 @@
   "name": "amtrak-lol",
   "version": "0.1.0",
   "description": "amtrak.lol heroku side",
-  "main": "src/index.js",
+  "main": "src/index-server.js",
   "scripts": {
     "build": "./build.sh",
-    "start": "node src/index.js",
+    "start": "node src/index-server.js",
+    "start-app": "react-scripts start",
     "test": "jest"
   },
   "author": "",
@@ -19,8 +20,28 @@
     "express": "^4.18.2",
     "onnxruntime-node": "^1.14.0",
     "pg": "^8.8.0",
+    "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
-    "sha256": "^0.2.0"
+    "sha256": "^0.2.0",
+    "web-vitals": "^3.3.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

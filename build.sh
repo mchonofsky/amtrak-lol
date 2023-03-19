@@ -40,5 +40,4 @@ done
 
 
 echo 'building amtrak-lol interface'
-cd amtrak-lol
-npm run build
+npx react-scripts build
