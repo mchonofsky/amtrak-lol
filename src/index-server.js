@@ -316,9 +316,9 @@ app.post("/api/load_data", (req, result) => {
 });
 
 app
-  .use(express.static(path.join(__dirname, "../amtrak-lol", "build")))
+  .use(express.static(path.join(__dirname, "../build")))
   //.set("views", path.join(__dirname, "views"))
   //.set("view engine", "ejs")
-  .get("/*", (req, res) => res.sendFile(path.join(__dirname,"../amtrak-lol/build/index.html")))
+  .get("/*", (req, res) => res.sendFile(path.join(__dirname,"../build/index.html")))
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
