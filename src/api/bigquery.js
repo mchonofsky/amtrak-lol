@@ -1,8 +1,11 @@
 const { BigQuery } = require('@google-cloud/bigquery');
-const { GoogleAuth } = require('google-auth-library');
+const { createClient, DEBUG_MODE } = require('../db/setup.js');
 
-const { createClient } = require('../db/setup.js');
-const bigquery = new BigQuery();
+const bigquery = new BigQuery({
+  projectId: 'your_project_id',
+  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON)
+});
+
 const client = createClient();
 
 exports.updateBigqueryStations = function updateBigqueryStations(client) {
