@@ -1,4 +1,6 @@
-const {BigQuery} = require('@google-cloud/bigquery');
+const { BigQuery } = require('@google-cloud/bigquery');
+const { GoogleAuth } = require('google-auth-library');
+
 const { createClient } = require('../db/setup.js');
 const bigquery = new BigQuery();
 const client = createClient();
