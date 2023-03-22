@@ -9,8 +9,8 @@ function App() {
   return (
     <div class='app'>
       <div class="splashbox">
-        <div id="wherethe">where on</div>
-        <div class="earth">EARTH</div>
+        <div id="wherethe">where the</div>
+        <div class="fuck">FUCK</div>
         <div>is my train</div>
       </div>
       <GlobalContext.Provider value={[ appState, setAppState ]}>

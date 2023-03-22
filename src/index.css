@@ -4,6 +4,11 @@
 html {
   box-sizing: border-box;
 }
+
+title {
+  display: none;
+}
+
 *, *:before, *:after {
   box-sizing: inherit;
   display: inherit;
@@ -29,7 +34,7 @@ body {
 line-height: 7vh;
 }
 
-.earth {
+.fuck {
   font-family: "monoton", sans-serif;
   font-size: 8vh;
   line-height: 8vh;
