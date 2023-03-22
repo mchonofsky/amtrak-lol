@@ -7,7 +7,7 @@ import ResultRow from './ResultRow.js';
 function formatTime(timeString) {
   let time = new Date(Date.parse(timeString));
   return time.getHours().toString().padStart(2,'0')+':'+time.getMinutes().toString().padStart(2,'0') + 
-    ((time.getHours() > 11) ? ' am' : ' pm');
+    ((time.getHours() > 11) ? ' pm' : ' am');
 }
 
 function TrainDetails(props) {

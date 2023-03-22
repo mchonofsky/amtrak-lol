@@ -59,9 +59,9 @@ exports.saveStation = function saveStation(
           station.code,
           train_id,
           station.schArr,
-          station.arr,
+          station.status == 'Departed' ? station.arr : null,
           station.schDep,
-          station.dep,
+          station.status == 'Departed' ? station.dep: null,
           update_id
         ]
       )
