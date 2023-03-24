@@ -95,7 +95,7 @@ app.post("/api/get_train", async (req, result) => {
           JOIN stations s1 ON s1.station_id = tr.first_station
           JOIN stations s2 on s2.station_id = tr.last_station
           JOIN stations sx on st.station_id = sx.station_id
-        WHERE train_id in ${train_id_string}
+        WHERE st.train_id in ${train_id_string}
         GROUP BY st.train_id, s1.city, s1.state_code, s2.city, s2.state_code, s1.station_id, s2.station_id;`)).rows;
   result.status(200);
   result.send(trains);
