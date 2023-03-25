@@ -7,8 +7,9 @@ const DEBUG_MODE = true;
 
 function TimeDisplay(props) {
   const [appState, setAppState ] = useContext( GlobalContext );
-  
+
   var train = getCurrentTrain(appState);
+  console.log('appState', appState);
   console.log('train is', train)
   train.stations.sort( (s,t) => ascendingSort(bestTime(s), bestTime(t)));
   console.log('appState', appState)
@@ -66,7 +67,7 @@ function TimeDisplay(props) {
       { (! nextStationIdentified.allComplete ) && (
         <>
           <div class="top-header">next stop <span class="highlight">{nextStation.display_name}</span> in <span class="highlight">{Math.round((Date.parse(bestTime(nextStation)) - current_time)/60000) }</span> minutes</div>
-          <div class="morebutton stops">more stops</div>
+          <div class="morebutton details" onClick={makeSwitchTo('train-details', appState, setAppState)} >more stops</div>
         </>
       )}
         </div>

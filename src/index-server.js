@@ -98,6 +98,7 @@ app.post("/api/get_train", async (req, result) => {
         WHERE st.train_id in ${train_id_string}
         GROUP BY st.train_id, s1.city, s1.state_code, s2.city, s2.state_code, s1.station_id, s2.station_id;`)).rows;
   result.status(200);
+  console.log('INFERENCED', trains);
   result.send(trains);
 })
 

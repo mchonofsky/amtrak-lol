@@ -1,22 +1,26 @@
 import React, { useState, useContext } from 'react';                                                             
 import {GlobalContext } from '../context/GlobalContext.js'
+import selectTrain  from './selectTrain.js'
 import axios from 'axios';
 import {makeSwitchTo, switchTo} from '../context/setup.js';
+import '../css/spinner.css'
 
 function LocationPrompt(props) {
   const [appState, setAppState ] = useContext(GlobalContext );
   
-  // TODO merge into appState
   const [errorPromptVisible, setErrorPromptVisible ] = useState(false);
+  const [spinnerVisible, setSpinnerVisibility ] = useState(false);
 
   const errorPromptInvisible = () => {
     setErrorPromptVisible(false);
   }
 
   const getLocation = () => {
+    setSpinnerVisibility(true);
     const options = { enableHighAccuracy: true, timeout: 15000};
     const doError = (err) => 
       {
+        setSpinnerVisibility(false);
         console.log(err);
         setErrorPromptVisible(true);
         setTimeout(errorPromptInvisible, 3000);
@@ -34,11 +38,14 @@ function LocationPrompt(props) {
         })
         // then retrieves train
         appState.trains = response.data;
+        setAppState({...appState, 'trains': response.data});
         if ( appState.trains.length > 1 ) {
           switchTo('multiple-trains', appState, setAppState);
         } else if ( appState.trains.length === 1 ) {
-          switchTo('time-display', appState, setAppState);
+          selectTrain(appState.trains[0].train_id, appState, setAppState)();
+          //switchTo('time-display', appState, setAppState);
         }
+        setSpinnerVisibility(false);
       }
       catch (e) {
         doError(e);
@@ -65,10 +72,14 @@ function LocationPrompt(props) {
           <div class="error-prompt">We couldn't get your location. You can keep trying.</div>
         )
       }
-    </div>
     <div class="mainbox-box">
       <div class="morebutton trains" onClick={makeSwitchTo('train-search', appState, setAppState)}>search for trains</div>
     </div>
+    </div>
+    { spinnerVisible && (
+      <div class="lds-dual-ring"></div>
+      )
+    }
     </>
   )
 };
