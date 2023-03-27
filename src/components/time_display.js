@@ -67,7 +67,7 @@ function TimeDisplay(props) {
       { (! nextStationIdentified.allComplete ) && (
         <>
           <div class="top-header">next stop <span class="highlight">{nextStation.display_name}</span> in <span class="highlight">{Math.round((Date.parse(bestTime(nextStation)) - current_time)/60000) }</span> minutes</div>
-          <div class="morebutton details" onClick={makeSwitchTo('train-details', appState, setAppState)} >more stops</div>
+          <div>you were 32 minutes late at the last stop</div>
         </>
       )}
         </div>

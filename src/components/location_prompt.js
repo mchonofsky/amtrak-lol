@@ -23,17 +23,21 @@ function LocationPrompt(props) {
         setSpinnerVisibility(false);
         console.log(err);
         setErrorPromptVisible(true);
-        setTimeout(errorPromptInvisible, 3000);
+        //setTimeout(errorPromptInvisible, 3000);
       };
     const doSuccess = async (result) => {
       console.log('in doSuccess');
       // gets geolocation
       console.log('location is', result);
       appState.geolocation = result;
-      setAppState({...appState, 'geolocation': appState.geolocation})
+      setAppState({...appState, 'geolocation': result})
       try {
         let response = await axios.post('/api/get_train', {
-          coords: appState.geolocation.coords,
+          coords: {
+            'latitude': appState.geolocation.coords.latitude, 
+            'longitude': appState.geolocation.coords.longitude, 
+            'speed': appState.geolocation.coords.speed
+          },
           timestamp: appState.geolocation.timestamp
         })
         // then retrieves train

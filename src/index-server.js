@@ -19,13 +19,11 @@ const client = createClient();
 // Create a new express app
 const app = express();
 
-
 app.use(express.json());
 
 app.post("/api/get_train", async (req, result) => {
   let data = req.body;
-  const onnx_session =  await ort.InferenceSession.create('./src/models/location-to-train-novelocity/pipeline_xgboost.onnx');
-  console.log(onnx_session);
+  const onnx_session = await ort.InferenceSession.create('./src/models/location-to-train-novelocity/pipeline_xgboost.onnx');
   console.log('geoloc data is.', data);
   if ( (Object.keys(data.coords).length === 0 ) && (! DEBUG_MODE) )
   {
@@ -75,6 +73,15 @@ app.post("/api/get_train", async (req, result) => {
     const results = await onnx_session.run(tensors);
     // data
     const output = results.label.data[0];
+    console.log(
+      'train', 
+      [candidate_trains[train_index][1]].concat(candidate_trains[train_index].slice(4,6)), 
+      'user', 
+      [speed, latitude, longitude], 
+      'delta t', 
+      Date.now()/1000 - last_val_ts, 
+      output
+    );
     if (output == 1) matches.push(train_id);
   }
   
