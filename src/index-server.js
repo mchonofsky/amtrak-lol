@@ -118,7 +118,7 @@ app.post("/api/train_details", async (req, result) => {
 
   var stations_trains = (await
     client.query(`SELECT
-      train.amtrak_train_number, train.velocity, train.lastvalts, train.first_station, train.last_station,
+      train.amtrak_train_number, train.velocity, train.latitude tr_latitude, train.longitude tr_longitude, train.lastvalts, train.first_station, train.last_station,
       stations_trains.*, stations.display_name, stations.state_code, stations.latitude, stations.longitude
       FROM train_reports train
       JOIN stations_trains ON train.train_id = stations_trains.train_id
@@ -151,6 +151,8 @@ app.post("/api/train_details", async (req, result) => {
     current_time: new Date((first_station.scheduled_arrival.getTime() + last_station.scheduled_arrival.getTime())/2), // this line
     train_data: {
       amtrak_train_number: stations_trains[0].amtrak_train_number,
+      latitude: stations_trains[0].tr_latitude,
+      longitude: stations_trains[0].tr_longitude,
       velocity: stations_trains[0].velocity,
       lastvalts: stations_trains[0].lastvalts
     },

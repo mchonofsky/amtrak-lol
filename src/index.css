@@ -82,13 +82,10 @@ line-height: 7vh;
 
 }
 
-.error-prompt {
-  display: none;
-}
-
 .supporting-text {
-    text-align: center;
-    font-size: large;
+  font-family: "Martian Mono",serif;
+  text-align: center;
+  font-size: large;
 }
 
 .station-details {

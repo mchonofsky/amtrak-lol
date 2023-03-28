@@ -23,8 +23,9 @@ function LocationPrompt(props) {
         setSpinnerVisibility(false);
         console.log(err);
         setErrorPromptVisible(true);
-        //setTimeout(errorPromptInvisible, 3000);
+        setTimeout(errorPromptInvisible, 3000);
       };
+
     const doSuccess = async (result) => {
       console.log('in doSuccess');
       // gets geolocation
@@ -32,6 +33,8 @@ function LocationPrompt(props) {
       appState.geolocation = result;
       setAppState({...appState, 'geolocation': result})
       try {
+        // comment in to test error handling
+        // throw new Error('test error for doError');
         let response = await axios.post('/api/get_train', {
           coords: {
             'latitude': appState.geolocation.coords.latitude, 
@@ -70,12 +73,12 @@ function LocationPrompt(props) {
   return ( <>
     <div class="mainbox-box first">
       <div class="top-header">Where are you?</div>
-      <div class="morebutton stops" onClick={getLocation}>use my location</div>
       {errorPromptVisible && 
         (
           <div class="error-prompt">We couldn't get your location. You can keep trying.</div>
         )
       }
+      <div class="morebutton stops" onClick={getLocation}>use my location</div>
     <div class="mainbox-box">
       <div class="morebutton trains" onClick={makeSwitchTo('train-search', appState, setAppState)}>search for trains</div>
     </div>
