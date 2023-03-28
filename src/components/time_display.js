@@ -23,21 +23,22 @@ function TimeDisplay(props) {
     var train = appState.selectedTrainDetails; 
     // remove any missing data
     train.stations = train.stations.filter( (a) => Date.parse(a.scheduled_departure || a.scheduled_arrival) ) 
-    // sort on arrival time
+    // sort on arrival time backwards - if we miss a station, we still get the most recent report triggering loop escape
+    // otherwise this is the obvious construction
     train.stations = train.stations.sort((a,b) => {
         return Date.parse(b.scheduled_departure || b.scheduled_arrival ) > Date.parse( a.scheduled_departure || a.scheduled_arrival )
-          ? -1 : 1;
+          ? 1 : -1;
         
       }
     )
     console.log('ts', train.stations);
     console.log(train.stations);
     for (var i = 0; i < train.stations.length; i++) {
-      if (train.stations[i].posted_arrival === null && train.stations[i].posted_departure === null) {
-        return {next_station: train.stations[i], last_station: train.stations[i-1], allComplete: false}
+      if (train.stations[i].posted_arrival !== null && train.stations[i].posted_departure !== null) {
+        return {next_station: train.stations[i-1], last_station: train.stations[i], allComplete: false}
       }
     }
-    return {next_station: undefined, last_station: train.stations[train.stations.length], allComplete: true}
+    return {next_station: undefined, last_station: train.stations[0], allComplete: true}
   }
 
   var currentStations = getCurrentStations();
@@ -47,13 +48,19 @@ function TimeDisplay(props) {
   //var lastStation = train.stations.reduce((accumulator, currentValue) => ) 
   var lastStopArrivedLate = false;
   var lastStopDepartedLate = false
+  
   if (currentStations.last_station && (Date.parse(currentStations.last_station.scheduled_arrival) < Date.parse(currentStations.last_station.posted_arrival))) {
     lastStopArrivedLate = true
   }
+  
   if (currentStations.last_station && (Date.parse(currentStations.last_station.scheduled_departure) < Date.parse(currentStations.last_station.posted_departure))) {
     lastStopDepartedLate = true
     var lastStopMinutesLate= Math.round((Date.parse(currentStations.last_station.posted_departure) - Date.parse(currentStations.last_station.scheduled_departure))/60000);
   }
+  var minutesRemaining = Math.round((Date.parse(
+            currentStations.next_station.scheduled_arrival || currentStations.next_station.scheduled_departure
+          ) - current_time)/60000);
+
   return (
     <>
       <div class="mainbox-box first">
@@ -62,9 +69,9 @@ function TimeDisplay(props) {
           <>looks like you've arrived at {train.last_station.display_name}</>      
         )}
         { (! currentStations.allComplete ) && (
-          <>next stop <span class="highlight">{nextStation.display_name}</span> in <span class="highlight">{Math.round((Date.parse(
-            currentStations.next_station.scheduled_arrival || currentStations.next_station.scheduled_departure
-          ) - current_time)/60000) }</span> minutes</>
+          <>next stop <span class="highlight">{nextStation.display_name}</span> {
+            (minutesRemaining > 0 ) && <>in <span class="highlight">{minutesRemaining }</span> minutes</>
+          }</>
         )}
         { ( lastStopDepartedLate) && 
         <div class="supporting-text">

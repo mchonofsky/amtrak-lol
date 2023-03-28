@@ -22,7 +22,7 @@ body {
 
 .splashbox {
   font-family: "VT323", monospace;
-  font-size: 6vh;
+  font-size: 5vh;
   line-height: 6vh;
   display: flex;
   flex-direction: column;
@@ -50,7 +50,7 @@ line-height: 7vh;
   min-width: 90%;
   margin: 1em;
   text-underline-offset: 0.3em;
-  height: 55vh;
+  min-height: 55vh;
 }
 
 .top-header {
@@ -63,7 +63,6 @@ line-height: 7vh;
 
 .highlight {
   display: inline;
-  text-decoration: underline;
 }
 
 .mainbox-box.first {
@@ -72,7 +71,7 @@ line-height: 7vh;
 .morebutton {
   margin: 0.5em;
   color: darkslategray;
-
+  font-size: 2.5vh;
   text-decoration: underline;
   text-underline-offset: 4px;
   cursor: pointer;  
@@ -85,7 +84,7 @@ line-height: 7vh;
 .supporting-text {
   font-family: "Martian Mono",serif;
   text-align: center;
-  font-size: large;
+  font-size: 2.5vh;
 }
 
 .station-details {
